@@ -1,5 +1,5 @@
 import knex, { Knex } from 'knex';
-import knexConfig from '@knexfile';
+import knexConfig from '../../../knexfile';
 import { IUserRepository, NewUser, User } from "./IUserRepository";
 import NotFoundError from '../../errors/NotFoundError';
 
