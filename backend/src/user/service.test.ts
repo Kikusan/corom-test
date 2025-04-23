@@ -101,5 +101,16 @@ describe('User service', () => {
                     birthdate: '1990-01-01',
                 }]);
         });
+
+        it('should throw an error if user not found', async () => {
+            try {
+                await service.deleteUser('100');
+            }
+            catch (error) {
+                expect(error).toEqual(new Error('User with id 100 not found'));
+                return;
+            }
+            expect(true).toBe(false);
+        });
     });
 });

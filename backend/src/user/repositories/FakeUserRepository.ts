@@ -1,3 +1,4 @@
+import NotFoundError from "../../errors/NotFoundError";
 import { IUserRepository, NewUser, User } from "./IUserRepository";
 
 class FakeUserRepository implements IUserRepository {
@@ -35,7 +36,7 @@ class FakeUserRepository implements IUserRepository {
     updateUser(user: User): Promise<User> {
         const index = this.users.findIndex((u) => u.id === user.id);
         if (index === -1) {
-            throw new Error(`User with id ${user.id} not found`);
+            throw new NotFoundError(`User with id ${user.id} not found`);
         }
         this.users[index] = user;
         return Promise.resolve(user);
@@ -44,7 +45,7 @@ class FakeUserRepository implements IUserRepository {
     deleteUser(id: string): Promise<void> {
         const index = this.users.findIndex((u) => u.id === id);
         if (index === -1) {
-            throw new Error(`User with id ${id} not found`);
+            throw new NotFoundError(`User with id ${id} not found`);
         }
         this.users.splice(index, 1);
         return Promise.resolve();
