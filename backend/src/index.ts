@@ -1,15 +1,21 @@
 import Fastify from 'fastify';
-import healthRoutes from './routes/home';
+import cors from '@fastify/cors'
+
+
+import healthRoutes from './routes/health-check';
+import swaggerRoute from './routes/swagger';
+import userRoutes from './user/routes';
 
 const app = Fastify({
     logger: true
 });
-
-app.get('/', async (request, reply) => {
-    return { hello: 'coucou' };
-});
-
+app.register(cors, {
+    origin: true,
+})
+swaggerRoute(app)
 app.register(healthRoutes)
+app.register(userRoutes, { prefix: '/user' })
+
 const start = async () => {
     try {
         const PORT = parseInt(process.env.PORT ?? '3000');
