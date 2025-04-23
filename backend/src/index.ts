@@ -11,6 +11,7 @@ const app = Fastify({
 });
 app.register(cors, {
     origin: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
 })
 swaggerRoute(app)
 app.register(healthRoutes)
