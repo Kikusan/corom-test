@@ -1,0 +1,19 @@
+{
+  "name": "fastify-typescript-docker",
+  "version": "1.0.0",
+  "description": "Fastify TypeScript Docker project",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts"
+  },
+  "dependencies": {
+    "fastify": "^5.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.1",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.3"
+  }
+}
