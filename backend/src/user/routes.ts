@@ -1,11 +1,12 @@
 import { FastifyInstance } from 'fastify'
 import UserService from './service';
 import FakeUserRepository from './repositories/FakeUserRepository';
-import { NewUser } from './repositories/IUserRepository';
+import KnexUserRepository from './repositories/KnexUserRepository';
+import { IUserRepository, NewUser } from './repositories/IUserRepository';
 
 
 export default function createUserRoutes(mock: boolean = false) {
-    let userRepository = new FakeUserRepository();
+    let userRepository: IUserRepository = new KnexUserRepository();
 
     if (mock) {
         userRepository = new FakeUserRepository();

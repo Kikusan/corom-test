@@ -1,6 +1,6 @@
 import { createApp } from './app';
 
-const app = createApp(true);
+const app = createApp();
 const start = async () => {
     try {
         const PORT = parseInt(process.env.PORT ?? '3000');
