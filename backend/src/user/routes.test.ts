@@ -64,6 +64,25 @@ describe('User routes', () => {
             const res = await supertest(app.server).post('/user').send(newUser)
             expect(res.status).toBe(401)
         });
+
+        it('should return an error with the code 400', async () => {
+            const newUser = {
+                prenom: 'Alice',
+                nom: 'Smith',
+                email: 'alice sans mail',
+                birthdate: 'inconnu',
+            }
+
+            const expectedBody = {
+                error: "Bad Request",
+                message: "body must have required property 'firstname', body must have required property 'lastname', body/email must match format \"email\", body/birthdate must match format \"date\"",
+                statusCode: 400
+            }
+
+            const res = await supertest(app.server).post('/user').send(newUser)
+            expect(res.status).toBe(400)
+            expect(res.body).toEqual(expectedBody)
+        });
     })
 
     describe('PUT /user/:id', () => {
@@ -78,32 +97,51 @@ describe('User routes', () => {
 
             const res = await supertest(app.server).put('/user/1').send(newUser).set('Authorization', `Bearer ${token}`)
             expect(res.status).toBe(200)
-            expect(res.body).toMatchObject(newUser)
+            expect(res.body).toEqual({ id: "1", ...newUser })
         });
 
         it('should return status code 404 if user does not exist', async () => {
             const token = await authenticate(app);
-            const newUser = {
+            const updatedUser = {
                 firstname: 'Alice',
                 lastname: 'Smith',
                 email: 'alice@example.com',
                 birthdate: '1992-05-10',
             }
 
-            const res = await supertest(app.server).put('/user/404').send(newUser).set('Authorization', `Bearer ${token}`)
+            const res = await supertest(app.server).put('/user/404').send(updatedUser).set('Authorization', `Bearer ${token}`)
             expect(res.status).toBe(404)
         });
 
         it('should return an error with the code 401', async () => {
-            const newUser = {
+            const updatedUser = {
                 firstname: 'Alice',
                 lastname: 'Smith',
                 email: 'alice@example.com',
                 birthdate: '1992-05-10',
             }
 
-            const res = await supertest(app.server).put('/user/1').send(newUser)
+            const res = await supertest(app.server).put('/user/1').send(updatedUser)
             expect(res.status).toBe(401)
+        });
+
+        it('should return an error with the code 400', async () => {
+            const updatedUser = {
+                prenom: 'Alice',
+                nom: 'Smith',
+                email: 'alice sans mail',
+                birthdate: 'inconnu',
+            }
+
+            const expectedBody = {
+                error: "Bad Request",
+                message: "body must have required property 'firstname', body must have required property 'lastname', body/email must match format \"email\", body/birthdate must match format \"date\"",
+                statusCode: 400
+            }
+
+            const res = await supertest(app.server).put('/user/1').send(updatedUser)
+            expect(res.status).toBe(400)
+            expect(res.body).toEqual(expectedBody)
         });
     });
 

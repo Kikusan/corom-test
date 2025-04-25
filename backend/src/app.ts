@@ -11,7 +11,12 @@ import UnauthorizedError from './errors/UnauthorizedError';
 
 export function createApp(fake: boolean = false) {
     const app = Fastify({
-        logger: true
+        logger: true,
+        ajv: {
+            customOptions: {
+                allErrors: true,
+            },
+        },
     });
 
     app.register(fastifyJwt, {
