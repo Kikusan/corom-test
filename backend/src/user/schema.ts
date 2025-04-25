@@ -1,3 +1,5 @@
+import { format } from "path";
+
 const getUsersSchema = {
     description: 'retrieve all users',
     tags: ['user'],
@@ -39,7 +41,7 @@ const addUserSchema = {
             description: 'User created successfully',
             type: 'object',
             properties: {
-                id: { type: 'string' },
+                id: { type: 'string', format: 'uuid' },
                 firstname: { type: 'string' },
                 lastname: { type: 'string' },
                 email: { type: 'string', format: 'email' },
@@ -53,6 +55,13 @@ const updateUserSchema = {
     description: 'update a user',
     tags: ['user'],
     security: [{ bearerAuth: [] }],
+    params: {
+        type: 'object',
+        properties: {
+            id: { type: 'string', format: 'uuid' }
+        },
+        required: ['id']
+    },
     body: {
         type: 'object',
         properties: {
@@ -68,7 +77,7 @@ const updateUserSchema = {
             description: 'User created successfully',
             type: 'object',
             properties: {
-                id: { type: 'string' },
+                id: { type: 'string', format: 'uuid' },
                 firstname: { type: 'string' },
                 lastname: { type: 'string' },
                 email: { type: 'string', format: 'email' },
@@ -85,7 +94,7 @@ const deleteUserSchema = {
     params: {
         type: 'object',
         properties: {
-            id: { type: 'string' }
+            id: { type: 'string', format: 'uuid' }
         },
         required: ['id']
     },

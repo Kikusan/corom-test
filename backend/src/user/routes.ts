@@ -4,15 +4,16 @@ import FakeUserRepository from './repositories/FakeUserRepository';
 import KnexUserRepository from './repositories/KnexUserRepository';
 import { IUserRepository, NewUser } from './repositories/IUserRepository';
 import { addUserSchema, deleteUserSchema, getUsersSchema, updateUserSchema } from './schema';
+import { pinoLogger } from '../logger/pinoLogger';
 
 
 export default function createUserRoutes(mock: boolean = false) {
-    let userRepository: IUserRepository = new KnexUserRepository();
+    let userRepository: IUserRepository = new KnexUserRepository(pinoLogger);
 
     if (mock) {
-        userRepository = new FakeUserRepository();
+        userRepository = new FakeUserRepository(pinoLogger);
     }
-    const userService = new UserService(userRepository);
+    const userService = new UserService(userRepository, pinoLogger);
 
     return async function userRoutes(app: FastifyInstance) {
         app.get('/', {

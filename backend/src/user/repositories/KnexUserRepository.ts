@@ -2,14 +2,18 @@ import knex, { Knex } from 'knex';
 import knexConfig from '../../../knexfile';
 import { IUserRepository, NewUser, User } from "./IUserRepository";
 import NotFoundError from '../../errors/NotFoundError';
+import { ILogger } from '../../logger/ILogger';
 
 
 class KnexRepository implements IUserRepository {
     private readonly db: Knex;
+    private readonly logger: ILogger;
+    private readonly LOG_PREFIX = 'FakeUserRepository';
     private readonly TABLE_NAME: string = 'users';
 
-    constructor() {
+    constructor(logger: ILogger) {
         this.db = knex(knexConfig['development']);
+        this.logger = logger;
     }
     async addUser(user: NewUser): Promise<User> {
         const [newRecord] = await this.db(this.TABLE_NAME).insert(user).returning('*');
@@ -22,6 +26,7 @@ class KnexRepository implements IUserRepository {
         const [updatedRecord] = await this.db(this.TABLE_NAME).where({ id: user.id }).update({ ...user, updated_at }).returning('*');
 
         if (!updatedRecord) {
+            this.logger.error(`${this.LOG_PREFIX}: User with id ${user.id} not found`)
             throw new NotFoundError(`User with id ${user.id} not found`);
         }
         return updatedRecord;
@@ -29,6 +34,7 @@ class KnexRepository implements IUserRepository {
     async deleteUser(id: string): Promise<void> {
         const result = await this.db(this.TABLE_NAME).where({ id }).del();
         if (result === 0) {
+            this.logger.error(`${this.LOG_PREFIX}: User with id ${id} not found`)
             throw new NotFoundError(`User with id ${id} not found`);
         }
     }

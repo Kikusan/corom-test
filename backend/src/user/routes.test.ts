@@ -95,9 +95,9 @@ describe('User routes', () => {
                 birthdate: '1992-05-10',
             }
 
-            const res = await supertest(app.server).put('/user/1').send(newUser).set('Authorization', `Bearer ${token}`)
+            const res = await supertest(app.server).put('/user/11111111-1111-1111-1111-111111111111').send(newUser).set('Authorization', `Bearer ${token}`)
             expect(res.status).toBe(200)
-            expect(res.body).toEqual({ id: "1", ...newUser })
+            expect(res.body).toEqual({ id: "11111111-1111-1111-1111-111111111111", ...newUser })
         });
 
         it('should return status code 404 if user does not exist', async () => {
@@ -109,7 +109,7 @@ describe('User routes', () => {
                 birthdate: '1992-05-10',
             }
 
-            const res = await supertest(app.server).put('/user/404').send(updatedUser).set('Authorization', `Bearer ${token}`)
+            const res = await supertest(app.server).put('/user/40411111-1111-1111-1111-111111111111').send(updatedUser).set('Authorization', `Bearer ${token}`)
             expect(res.status).toBe(404)
         });
 
@@ -121,11 +121,30 @@ describe('User routes', () => {
                 birthdate: '1992-05-10',
             }
 
-            const res = await supertest(app.server).put('/user/1').send(updatedUser)
+            const res = await supertest(app.server).put('/user/11111111-1111-1111-1111-111111111111').send(updatedUser)
             expect(res.status).toBe(401)
         });
 
+        it('should return an error with the code 400 if id is not uuid type', async () => {
+            const token = await authenticate(app);
+            const updatedUser = {
+                firstname: 'Alice',
+                lastname: 'Smith',
+                email: 'alice@example.com',
+                birthdate: '1992-05-10',
+            }
+            const expectedBody = {
+                error: "Bad Request",
+                message: "params/id must match format \"uuid\"",
+                statusCode: 400
+            }
+            const res = await supertest(app.server).put('/user/not-uuid').send(updatedUser).set('Authorization', `Bearer ${token}`)
+            expect(res.status).toBe(400)
+            expect(res.body).toEqual(expectedBody)
+        })
+
         it('should return an error with the code 400', async () => {
+            const token = await authenticate(app);
             const updatedUser = {
                 prenom: 'Alice',
                 nom: 'Smith',
@@ -139,7 +158,7 @@ describe('User routes', () => {
                 statusCode: 400
             }
 
-            const res = await supertest(app.server).put('/user/1').send(updatedUser)
+            const res = await supertest(app.server).put('/user/11111111-1111-1111-1111-111111111111').send(updatedUser).set('Authorization', `Bearer ${token}`)
             expect(res.status).toBe(400)
             expect(res.body).toEqual(expectedBody)
         });
@@ -148,19 +167,31 @@ describe('User routes', () => {
     describe('DELETE /user/:id', () => {
         it('should delete a user', async () => {
             const token = await authenticate(app);
-            const res = await supertest(app.server).delete('/user/1').set('Authorization', `Bearer ${token}`)
+            const res = await supertest(app.server).delete('/user/11111111-1111-1111-1111-111111111111').set('Authorization', `Bearer ${token}`)
             expect(res.status).toBe(204)
         });
 
         it('should return status code 404 if user does not exist', async () => {
             const token = await authenticate(app);
-            const res = await supertest(app.server).delete('/user/404').set('Authorization', `Bearer ${token}`)
+            const res = await supertest(app.server).delete('/user/40411111-1111-1111-1111-111111111404').set('Authorization', `Bearer ${token}`)
             expect(res.status).toBe(404)
         });
 
         it('should return an error with the code 401', async () => {
-            const res = await supertest(app.server).delete('/user/1')
+            const res = await supertest(app.server).delete('/user/11111111-1111-1111-1111-111111111111')
             expect(res.status).toBe(401)
+        })
+
+        it('should return an error with the code 400 if id is not uuid type', async () => {
+            const token = await authenticate(app);
+            const expectedBody = {
+                error: "Bad Request",
+                message: "params/id must match format \"uuid\"",
+                statusCode: 400
+            }
+            const res = await supertest(app.server).delete('/user/not-uuid')
+            expect(res.status).toBe(400)
+            expect(res.body).toEqual(expectedBody)
         })
     })
 })

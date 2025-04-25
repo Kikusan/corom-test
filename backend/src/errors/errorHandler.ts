@@ -1,12 +1,14 @@
 import { FastifyError, FastifyReply, FastifyRequest } from 'fastify'
 import NotFoundError from './NotFoundError'
 import UnauthorizedError from './UnauthorizedError'
+import { pinoLogger } from '../logger/pinoLogger'
 
 export function errorHandler(
     error: FastifyError | NotFoundError | UnauthorizedError,
     request: FastifyRequest,
     reply: FastifyReply
 ) {
+    const LOG_PREFIX = 'controller'
 
     if (error instanceof NotFoundError) {
         return reply.status(404).send({
@@ -25,6 +27,7 @@ export function errorHandler(
     }
 
     if (error.code) {
+        pinoLogger.error(`${LOG_PREFIX}`, { error })
         return reply.status(error.statusCode ?? 500).send({
             statusCode: error.statusCode ?? 500,
             error: 'Bad Request',
