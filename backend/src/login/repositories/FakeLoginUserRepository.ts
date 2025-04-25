@@ -6,7 +6,7 @@ class FakeLoginUserRepository implements ILoginUserRepository {
     private readonly users: LoginUser[] = [
         {
             username: 'admin',
-            password: bcrypt.hashSync('admin', 10),
+            password: bcrypt.hashSync('admin', 10), //totally useless but it's just in order to show what I would do if I had to store it in database
         },
         {
             username: 'user',

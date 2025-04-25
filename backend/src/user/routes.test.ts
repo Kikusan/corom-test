@@ -189,7 +189,7 @@ describe('User routes', () => {
                 message: "params/id must match format \"uuid\"",
                 statusCode: 400
             }
-            const res = await supertest(app.server).delete('/user/not-uuid')
+            const res = await supertest(app.server).delete('/user/not-uuid').set('Authorization', `Bearer ${token}`)
             expect(res.status).toBe(400)
             expect(res.body).toEqual(expectedBody)
         })
