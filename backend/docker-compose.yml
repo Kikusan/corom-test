@@ -21,6 +21,7 @@ services:
       - DB_USER=postgres
       - DB_PASSWORD=postgres
       - DB_NAME=corom_db
+      - JWT_SECRET=this_is_a_secret
     depends_on:
       postgres:
         condition: service_healthy

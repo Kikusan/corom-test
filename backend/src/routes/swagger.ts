@@ -14,7 +14,14 @@ export default function swaggerRoute(app: FastifyInstance) {
             host: `${process.env.HOST}:${process.env.PORT}`,
             schemes: ['http'],
             consumes: ['application/json'],
-            produces: ['application/json']
+            produces: ['application/json'],
+            securityDefinitions: {
+                bearerAuth: {
+                    type: 'apiKey',
+                    name: 'Authorization',
+                    in: 'header',
+                },
+            },
         }
     });
 

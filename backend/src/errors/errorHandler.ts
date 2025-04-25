@@ -1,5 +1,6 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
 import NotFoundError from './NotFoundError'
+import UnauthorizedError from './UnauthorizedError'
 
 export function errorHandler(
     error: Error,
@@ -11,6 +12,14 @@ export function errorHandler(
         return reply.status(404).send({
             statusCode: 404,
             error: 'Not Found',
+            message: error.message,
+        })
+    }
+
+    if (error instanceof UnauthorizedError) {
+        return reply.status(401).send({
+            statusCode: 401,
+            error: 'Unauthorized',
             message: error.message,
         })
     }

@@ -3,6 +3,7 @@ import UserService from './service';
 import FakeUserRepository from './repositories/FakeUserRepository';
 import KnexUserRepository from './repositories/KnexUserRepository';
 import { IUserRepository, NewUser } from './repositories/IUserRepository';
+import { addUserSchema, deleteUserSchema, getUsersSchema, updateUserSchema } from './schema';
 
 
 export default function createUserRoutes(mock: boolean = false) {
@@ -15,59 +16,16 @@ export default function createUserRoutes(mock: boolean = false) {
 
     return async function userRoutes(app: FastifyInstance) {
         app.get('/', {
-            schema: {
-                description: 'retrieve all users',
-                tags: ['user'],
-                response: {
-                    200: {
-                        description: 'Successful response',
-                        type: 'array',
-                        items: {
-                            type: 'object',
-                            properties: {
-                                id: { type: 'string' },
-                                firstname: { type: 'string' },
-                                lastname: { type: 'string' },
-                                email: { type: 'string', format: 'email' },
-                                birthdate: { type: 'string', format: 'date' },
-                            },
-                        }
-                    }
-                }
-            }
+            preHandler: [app.authenticate],
+            schema: getUsersSchema
         }, async (request, reply) => {
             const users = await userService.getUsers();
             return reply.code(200).send(users);
         });
 
         app.post('/', {
-            schema: {
-                description: 'add a user',
-                tags: ['user'],
-                body: {
-                    type: 'object',
-                    properties: {
-                        firstname: { type: 'string' },
-                        lastname: { type: 'string' },
-                        email: { type: 'string', format: 'email' },
-                        birthdate: { type: 'string', format: 'date' },
-                    },
-                    required: ['firstname', 'lastname', 'email', 'birthdate'],
-                },
-                response: {
-                    201: {
-                        description: 'User created successfully',
-                        type: 'object',
-                        properties: {
-                            id: { type: 'string' },
-                            firstname: { type: 'string' },
-                            lastname: { type: 'string' },
-                            email: { type: 'string', format: 'email' },
-                            birthdate: { type: 'string', format: 'date' },
-                        }
-                    }
-                }
-            }
+            preHandler: [app.authenticate],
+            schema: addUserSchema
         }, async (request, reply) => {
             const { firstname, lastname, email, birthdate } = request.body as NewUser;
             const user = await userService.addUser({ firstname, lastname, email, birthdate });
@@ -75,33 +33,8 @@ export default function createUserRoutes(mock: boolean = false) {
         });
 
         app.put('/:id', {
-            schema: {
-                description: 'update a user',
-                tags: ['user'],
-                body: {
-                    type: 'object',
-                    properties: {
-                        firstname: { type: 'string' },
-                        lastname: { type: 'string' },
-                        email: { type: 'string', format: 'email' },
-                        birthdate: { type: 'string', format: 'date' },
-                    },
-                    required: ['firstname', 'lastname', 'email', 'birthdate'],
-                },
-                response: {
-                    200: {
-                        description: 'User created successfully',
-                        type: 'object',
-                        properties: {
-                            id: { type: 'string' },
-                            firstname: { type: 'string' },
-                            lastname: { type: 'string' },
-                            email: { type: 'string', format: 'email' },
-                            birthdate: { type: 'string', format: 'date' },
-                        }
-                    }
-                }
-            }
+            preHandler: [app.authenticate],
+            schema: updateUserSchema
         }, async (request, reply) => {
             const { id } = request.params as { id: string }
             const { firstname, lastname, email, birthdate } = request.body as NewUser;
@@ -110,23 +43,8 @@ export default function createUserRoutes(mock: boolean = false) {
         });
 
         app.delete('/:id', {
-            schema: {
-                description: 'delete a user',
-                tags: ['user'],
-                params: {
-                    type: 'object',
-                    properties: {
-                        id: { type: 'string' }
-                    },
-                    required: ['id']
-                },
-                response: {
-                    204: {
-                        description: 'User deleted successfully',
-                        type: 'null'
-                    }
-                }
-            }
+            preHandler: [app.authenticate],
+            schema: deleteUserSchema
         }, async (request, reply) => {
             const { id } = request.params as { id: string }
 
