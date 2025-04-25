@@ -1,23 +1,26 @@
-import NotFoundError from "../../errors/NotFoundError";
+import UnauthorizedError from "../../errors/UnauthorizedError";
 import { ILoginUserRepository, LoginUser } from "./ILoginUserRepository";
-
+import bcrypt from 'bcrypt';
 class FakeLoginUserRepository implements ILoginUserRepository {
 
     private readonly users: LoginUser[] = [
         {
             username: 'admin',
-            password: 'admin',
+            password: bcrypt.hashSync('admin', 10),
         },
         {
             username: 'user',
-            password: 'user',
+            password: bcrypt.hashSync('user', 10),
         },
     ];
 
     isAllowed(user: LoginUser): Promise<boolean> {
-        const foundUser = this.users.find(u => u.username === user.username && u.password === user.password);
+        const foundUser = this.users.find(u => u.username === user.username);
         if (!foundUser) {
-            throw new NotFoundError(`User with username ${user.username} not found`);
+            throw new UnauthorizedError(`User with username ${user.username} not found`);
+        }
+        if (!bcrypt.compareSync(user.password, foundUser.password)) {
+            throw new UnauthorizedError(`Invalid credentials`);
         }
         return Promise.resolve(true);
     }

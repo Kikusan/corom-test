@@ -1,4 +1,3 @@
-// src/routes/auth.ts
 import { FastifyInstance } from 'fastify'
 import { loginSchema } from './schema'
 import LoginService from './service'
@@ -6,6 +5,7 @@ import FakeLoginUserRepository from './repositories/FakeLoginUserRepository'
 
 const loginUserRepository = new FakeLoginUserRepository
 const loginService = new LoginService(loginUserRepository)
+
 export default async function authRoutes(fastify: FastifyInstance) {
     fastify.post('/login', {
         schema: loginSchema,
