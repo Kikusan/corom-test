@@ -1,0 +1,57 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "4000:4000"
+    environment:
+      - PORT=4000
+      - HOST=0.0.0.0
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=corom_db
+      - JWT_SECRET=this_is_a_secret
+      - LOG_LEVEL=debug
+      - NODE_ENV=development
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./backend/src:/app/src
+    command: >
+      sh -c "
+      npx knex migrate:latest --knexfile knexfile.ts &&
+      npm run dev
+      "
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=corom_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  frontend:
+    restart: always
+    build:
+      context: ./frontend
+    volumes:
+      - ./frontend/:/app/
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+volumes:
+  postgres_data:
