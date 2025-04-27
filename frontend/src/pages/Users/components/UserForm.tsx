@@ -131,6 +131,11 @@ export default function UserForm({
             error={!!errors.birthdate}
             helperText={errors.birthdate?.message}
             fullWidth
+            sx={{
+              '& input[type="date"]::-webkit-calendar-picker-indicator': {
+                filter: 'invert(1)',
+              },
+            }}
           />
         )}
       />
