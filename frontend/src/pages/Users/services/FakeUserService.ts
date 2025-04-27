@@ -171,14 +171,14 @@ export class FakeUserService implements IUserService {
         }
         return Promise.resolve()
     }
-    updateUser(userToBeUpdated: RegisteredUser): Promise<RegisteredUser[]> {
+    updateUser(userToBeUpdated: RegisteredUser): Promise<RegisteredUser> {
         const userIndex = this.users.findIndex(user => user.id === userToBeUpdated.id);
         if (userIndex === -1) {
             return Promise.reject(new Error(`User with ID ${userToBeUpdated.id} not found.`));
         }
 
         this.users[userIndex] = userToBeUpdated;
-        return Promise.resolve(this.users);
+        return Promise.resolve(this.users[userIndex]);
     }
 
 }

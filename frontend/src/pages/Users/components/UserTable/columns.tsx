@@ -3,6 +3,7 @@ import { GridColDef } from '@mui/x-data-grid';
 import { TableUser } from '../../services/User';
 type Actions = {
   handleDeleteUser: (id: string) => Promise<void>;
+  handleUpdateUser: (user: TableUser) => void;
 };
 
 const createColumns = (actions: Actions): GridColDef<TableUser[][number]>[] => {
@@ -27,7 +28,7 @@ const createColumns = (actions: Actions): GridColDef<TableUser[][number]>[] => {
     },
     {
       field: 'birthdate',
-      headerName: 'date de naissance',
+      headerName: 'birthdate',
       type: 'date',
       width: 250,
       editable: false,
@@ -44,7 +45,7 @@ const createColumns = (actions: Actions): GridColDef<TableUser[][number]>[] => {
             <Button
               variant="contained"
               size="small"
-              onClick={() => console.log('Edit', params.row)}
+              onClick={() => actions.handleUpdateUser(params.row)}
             >
               Edit
             </Button>
