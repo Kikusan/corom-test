@@ -1,7 +1,7 @@
 export const apiClient = async (endpoint: string, options: RequestInit = {}) => {
     const token = localStorage.getItem("token");
-
-    const response = await fetch(`http://localhost:4000${endpoint}`, {
+    const apiUrl = import.meta.env.VITE_API_BASE_URL
+    const response = await fetch(`${apiUrl}${endpoint}`, {
         ...options,
         headers: {
             ...options.headers,
