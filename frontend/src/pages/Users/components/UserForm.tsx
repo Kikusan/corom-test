@@ -32,7 +32,7 @@ export default function UserForm({
     email: currentUser?.email ?? '',
     birthdate: currentUser?.birthdate
       ? formatDateISO(currentUser.birthdate)
-      : formatDateISO(new Date()),
+      : '',
   };
 
   const {
@@ -44,6 +44,7 @@ export default function UserForm({
   const { createUser, getUsers, updateUser } = UseUser();
   const onSubmit = async (user: FormData) => {
     const userFromFormData = { ...user, birthdate: new Date(user.birthdate) };
+
     if (currentUser) {
       await updateUser({ id: currentUser.technicalId, ...userFromFormData });
     } else {
