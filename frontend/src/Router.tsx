@@ -1,10 +1,21 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Users } from './pages/Users';
+import LoginPage from './pages/Login';
+import { ProtectedRoute } from './ProtectedRoute';
 export function Router() {
   const router = createBrowserRouter([
     {
-      path: '/',
-      element: <Users />,
+      element: <ProtectedRoute />,
+      children: [
+        {
+          path: '/',
+          element: <Users />,
+        },
+      ],
+    },
+    {
+      path: '/auth',
+      element: <LoginPage />,
     },
   ]);
 

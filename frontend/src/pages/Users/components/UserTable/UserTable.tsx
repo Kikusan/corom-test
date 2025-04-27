@@ -24,7 +24,7 @@ export default function UserTable({
     refresh(response);
   };
 
-  const handleUpdateUser = async (user: TableUser) => {
+  const handleUpdateUser = (user: TableUser) => {
     setCurrentUser(user);
     setIsModalOpen(true);
   };

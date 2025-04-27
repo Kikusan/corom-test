@@ -1,17 +1,19 @@
 import { render, screen, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { FakeUserService } from './services/FakeUserService';
-import UserTable from './components/UserTable/UserTable';
 import { UserProvider } from './contexts/userContext';
+import { UserBody } from './UserBody';
 describe('user page', () => {
-  const userService = new FakeUserService();
-  it('should display the users', async () => {
+  beforeEach(async () => {
+    const userService = new FakeUserService();
     render(
       <UserProvider service={userService}>
-        <UserTable />
+        <UserBody />
       </UserProvider>,
     );
     await act(async () => {});
+  });
+  it('should display the users', async () => {
     const emails = [
       'alice.dupont@email.com',
       'bob.martin@email.com',
@@ -25,13 +27,19 @@ describe('user page', () => {
     });
   });
 
+  it('should open user creation modal', async () => {
+    const userCreationButton = screen.getByText('Create a user');
+    await userEvent.click(userCreationButton);
+    expect(screen.getByText(/Add a new user/i)).toBeDefined();
+  });
+
+  it('should open user edition modal', async () => {
+    const userDeleteButtons = screen.getAllByText('Edit');
+    await userEvent.click(userDeleteButtons[0]);
+    expect(screen.getByText(/update user: 1/i)).toBeDefined();
+  });
+
   it('should delete user when clicking on delete button', async () => {
-    render(
-      <UserProvider service={userService}>
-        <UserTable />
-      </UserProvider>,
-    );
-    await act(async () => {});
     const userDeleteButtons = screen.getAllByText('Delete');
     await userEvent.click(userDeleteButtons[0]);
     await act(async () => {});
