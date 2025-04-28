@@ -10,7 +10,7 @@ export const apiClient = async (endpoint: string, options: RequestInit = {}) => 
     });
 
     if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
+        throw new Error(`API error: ${response.status}.`);
     }
 
     if (response.status === 204)

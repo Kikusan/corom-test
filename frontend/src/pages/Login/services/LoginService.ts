@@ -9,12 +9,7 @@ export class LoginService implements ILoginService {
             body: JSON.stringify({ username, password }),
         })
 
-
         const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.message);
-        }
         return data.token;
     }
 
