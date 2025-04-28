@@ -8,7 +8,7 @@ describe("LoginService", () => {
             vi.spyOn(globalThis, "fetch").mockResolvedValue({
                 ok: true,
                 status: 200,
-                json: vi.fn().mockResolvedValue({ json: () => ({ token: 'token' }) }),
+                json: vi.fn().mockResolvedValue({ token: 'token' }),
             } as unknown as Response);
             result = await loginService.login('user', 'pass');
         });
@@ -39,7 +39,7 @@ describe("LoginService", () => {
             vi.spyOn(globalThis, "fetch").mockResolvedValue({
                 ok: false,
                 status: 500,
-                json: vi.fn().mockResolvedValue({ json: () => ({ message: 'KO' }) }),
+                json: vi.fn().mockResolvedValue({}),
             } as unknown as Response);
         });
 
