@@ -1,5 +1,6 @@
 import { apiClient } from "../../../utils/apiClient";
 import ApiError from "../../../utils/errors/ApiError";
+import BadRequestError from "../../../utils/errors/BadRequestError";
 import NotFoundError from "../../../utils/errors/NotFoundError";
 import UnexpectedError from "../../../utils/errors/UnexpectedError";
 import IUserService from "./IUserService";
@@ -71,13 +72,19 @@ export class UserService implements IUserService {
         return result;
     }
     private handleError(e: unknown) {
+        let error: Error = new UnexpectedError();
         if (e instanceof ApiError) {
-            if (e.statusCode === 404) {
-                throw new NotFoundError(e.message);
-            } else {
-                throw new UnexpectedError();
+            switch (e.statusCode) {
+                case 404:
+                    error = new NotFoundError(e.message);
+                    break;
+                case 400:
+                    error = new BadRequestError(e.message);
+                    break;
+                default:
+                    error = new UnexpectedError(e.message);
             }
         }
-        throw new UnexpectedError();
+        throw error;
     }
 }
