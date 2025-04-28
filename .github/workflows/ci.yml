@@ -1,30 +1,52 @@
-name: Backend CI
+name: Backend & Frontend CI
 
 on:
   push:
     branches: ['**']
-jobs:
-  test:
-    runs-on: ubuntu-latest
 
+jobs:
+  backend:
+    runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: backend
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
+      - name: Setup Node.js (Backend)
         uses: actions/setup-node@v4
         with:
           node-version: '23'
 
-      - name: Install dependencies
+      - name: Install dependencies (Backend)
         run: npm ci
 
-      - name: Build TypeScript
+      - name: Build TypeScript (Backend)
         run: npm run build
 
-      - name: Run tests
+      - name: Run tests (Backend)
+        run: npm test
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js (Frontend)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '23'
+
+      - name: Install dependencies (Frontend)
+        run: npm ci
+
+      - name: Build (Frontend)
+        run: npm run build
+
+      - name: Run tests (Frontend)
         run: npm test
