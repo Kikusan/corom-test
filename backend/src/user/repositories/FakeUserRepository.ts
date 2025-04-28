@@ -185,10 +185,13 @@ class FakeUserRepository implements IUserRepository {
     }
 
     searchUsers(search: Search): Promise<User[]> {
-        throw new Error("Method not implemented.");
+        const { page, pageSize } = search;
+        const startIndex = (page - 1) * pageSize;
+        const endIndex = page * pageSize;
+        return Promise.resolve(this.users.slice(startIndex, endIndex))
     }
     getUsersCount(): Promise<number> {
-        throw new Error("Method not implemented.");
+        return Promise.resolve(this.users.length)
     }
 }
 

@@ -36,11 +36,6 @@ export default class UserService {
         const users = await this.repository.searchUsers(search);
         const totalUsers = await this.repository.getUsersCount();
         const totalPages = Math.ceil(totalUsers / pageSize);
-        console.log({
-            users,
-            totalPages,
-            totalUsers,
-        })
 
         return {
             users,

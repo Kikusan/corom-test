@@ -1,4 +1,4 @@
-import UserService from "./service";
+import UserService, { Page, Search } from "./service";
 import FakeUserRepository from "./repositories/FakeUserRepository";
 import { IUserRepository, User } from "./repositories/IUserRepository";
 import { NotFoundError, BadRequestError } from "../errors";
@@ -156,9 +156,118 @@ describe('User service', () => {
                     birthdate: '1995-03-30',
                 }
             ];
-
             const users = await service.getUsers();
             expect(users).toEqual(expectedUsers);
+        });
+    });
+
+    describe('searchUsers', () => {
+        it('should return the 5 first users', async () => {
+            const expectedResult: Page = {
+                users: [
+                    {
+                        id: '11111111-1111-1111-1111-111111111111',
+                        firstname: 'John',
+                        lastname: 'Doe',
+                        email: 'John.Doe@unknown.com',
+                        birthdate: '1990-01-01',
+                    },
+                    {
+                        id: '22222222-2222-2222-2222-222222222222',
+                        firstname: 'Jane',
+                        lastname: 'Doe',
+                        email: 'Jane.Doe@unknown.com',
+                        birthdate: '1990-01-01',
+                    },
+                    {
+                        id: '33333333-3333-3333-3333-333333333333',
+                        firstname: 'Michael',
+                        lastname: 'Smith',
+                        email: 'Michael.Smith@unknown.com',
+                        birthdate: '1985-05-15',
+                    },
+                    {
+                        id: '44444444-4444-4444-4444-444444444444',
+                        firstname: 'Sarah',
+                        lastname: 'Johnson',
+                        email: 'Sarah.Johnson@unknown.com',
+                        birthdate: '1987-07-21',
+                    },
+                    {
+                        id: '55555555-5555-5555-5555-555555555555',
+                        firstname: 'David',
+                        lastname: 'Williams',
+                        email: 'David.Williams@unknown.com',
+                        birthdate: '1992-11-30',
+                    }
+                ],
+                totalUsers: 19,
+                totalPages: 4
+            }
+            const search: Search = { page: 1, pageSize: 5 }
+            const result = await service.searchUsers(search);
+            expect(result).toEqual(expectedResult);
+        });
+
+        it('should return the 7 users of the page 2', async () => {
+            const expectedResult: Page = {
+                users: [
+                    {
+                        id: '88888888-8888-8888-8888-888888888888',
+                        firstname: 'Laura',
+                        lastname: 'Miller',
+                        email: 'Laura.Miller@unknown.com',
+                        birthdate: '1995-06-25',
+                    },
+                    {
+                        id: '99999999-9999-9999-9999-999999999999',
+                        firstname: 'James',
+                        lastname: 'Davis',
+                        email: 'James.Davis@unknown.com',
+                        birthdate: '1991-10-10',
+                    },
+                    {
+                        id: '10101010-1010-1010-1010-101010101010',
+                        firstname: 'Olivia',
+                        lastname: 'Garcia',
+                        email: 'Olivia.Garcia@unknown.com',
+                        birthdate: '1989-04-04',
+                    },
+                    {
+                        id: '12121212-1212-1212-1212-121212121212',
+                        firstname: 'Christopher',
+                        lastname: 'Rodriguez',
+                        email: 'Christopher.Rodriguez@unknown.com',
+                        birthdate: '1986-09-18',
+                    },
+                    {
+                        id: '13131313-1313-1313-1313-131313131313',
+                        firstname: 'Megan',
+                        lastname: 'Martinez',
+                        email: 'Megan.Martinez@unknown.com',
+                        birthdate: '1994-08-08',
+                    },
+                    {
+                        id: '14141414-1414-1414-1414-141414141414',
+                        firstname: 'Matthew',
+                        lastname: 'Hernandez',
+                        email: 'Matthew.Hernandez@unknown.com',
+                        birthdate: '1987-12-25',
+                    },
+                    {
+                        id: '15151515-1515-1515-1515-151515151515',
+                        firstname: 'Sophia',
+                        lastname: 'Lopez',
+                        email: 'Sophia.Lopez@unknown.com',
+                        birthdate: '1992-02-22',
+                    },
+                ],
+                totalUsers: 19,
+                totalPages: 3
+            }
+            const search: Search = { page: 2, pageSize: 7 }
+            const result = await service.searchUsers(search);
+            expect(result).toEqual(expectedResult);
         });
     });
 

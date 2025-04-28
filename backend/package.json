@@ -8,6 +8,7 @@
     "dev": "tsx watch src/index.ts",
     "test": "jest",
     "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
     "seed": "knex seed:run"
   },
   "dependencies": {

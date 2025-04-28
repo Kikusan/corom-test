@@ -38,6 +38,61 @@ describe('User routes', () => {
         });
     })
 
+    describe('GET /user/search', () => {
+        it('should return an list of users', async () => {
+            const token = await authenticate(app);
+            const res = await supertest(app.server).get('/user/search?page=1&pageSize=5').set('Authorization', `Bearer ${token}`)
+            const expectedBody = {
+                users: [
+                    {
+                        id: '11111111-1111-1111-1111-111111111111',
+                        firstname: 'John',
+                        lastname: 'Doe',
+                        email: 'John.Doe@unknown.com',
+                        birthdate: '1990-01-01',
+                    },
+                    {
+                        id: '22222222-2222-2222-2222-222222222222',
+                        firstname: 'Jane',
+                        lastname: 'Doe',
+                        email: 'Jane.Doe@unknown.com',
+                        birthdate: '1990-01-01',
+                    },
+                    {
+                        id: '33333333-3333-3333-3333-333333333333',
+                        firstname: 'Michael',
+                        lastname: 'Smith',
+                        email: 'Michael.Smith@unknown.com',
+                        birthdate: '1985-05-15',
+                    },
+                    {
+                        id: '44444444-4444-4444-4444-444444444444',
+                        firstname: 'Sarah',
+                        lastname: 'Johnson',
+                        email: 'Sarah.Johnson@unknown.com',
+                        birthdate: '1987-07-21',
+                    },
+                    {
+                        id: '55555555-5555-5555-5555-555555555555',
+                        firstname: 'David',
+                        lastname: 'Williams',
+                        email: 'David.Williams@unknown.com',
+                        birthdate: '1992-11-30',
+                    }
+                ],
+                totalUsers: 19,
+                totalPages: 4
+            }
+            expect(res.status).toBe(200)
+            expect(res.body).toEqual(expectedBody)
+        });
+
+        it('should return an error with the code 401', async () => {
+            const res = await supertest(app.server).get('/user/search?page=1&pageSize=5')
+            expect(res.status).toBe(401)
+        });
+    })
+
     describe('POST /user', () => {
         it('should create a user', async () => {
             const token = await authenticate(app);
