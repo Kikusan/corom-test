@@ -14,12 +14,12 @@ describe('User routes', () => {
         return token;
     }
 
-    beforeAll(async () => {
+    beforeEach(async () => {
         app = createApp(true);
         await app.ready();
     });
 
-    afterAll(async () => {
+    afterEach(async () => {
         await app.close();
     });
 
@@ -51,6 +51,26 @@ describe('User routes', () => {
             const res = await supertest(app.server).post('/user').send(newUser).set('Authorization', `Bearer ${token}`)
             expect(res.status).toBe(201)
             expect(res.body).toMatchObject(newUser)
+        });
+
+        it('should return an error with the code 400 if email is already used', async () => {
+            const token = await authenticate(app);
+            const newUser = {
+                firstname: 'Alice',
+                lastname: 'Smith',
+                email: 'Jane.Doe@unknown.com',
+                birthdate: '1992-05-10',
+            }
+
+            const expectedBody = {
+                error: 'Bad request',
+                message: 'User with email Jane.Doe@unknown.com already exists',
+                statusCode: 400,
+            }
+
+            const res = await supertest(app.server).post('/user').send(newUser).set('Authorization', `Bearer ${token}`)
+            expect(res.status).toBe(400)
+            expect(res.body).toMatchObject(expectedBody)
         });
 
         it('should return an error with the code 401', async () => {
@@ -98,6 +118,26 @@ describe('User routes', () => {
             const res = await supertest(app.server).put('/user/11111111-1111-1111-1111-111111111111').send(newUser).set('Authorization', `Bearer ${token}`)
             expect(res.status).toBe(200)
             expect(res.body).toEqual({ id: "11111111-1111-1111-1111-111111111111", ...newUser })
+        });
+
+        it('should return an error with the code 400 if email is already used', async () => {
+            const token = await authenticate(app);
+            const newUser = {
+                firstname: 'Alice',
+                lastname: 'Smith',
+                email: 'Jane.Doe@unknown.com',
+                birthdate: '1992-05-10',
+            }
+
+            const expectedBody = {
+                error: 'Bad request',
+                message: 'User with email Jane.Doe@unknown.com already exists',
+                statusCode: 400,
+            }
+
+            const res = await supertest(app.server).post('/user').send(newUser).set('Authorization', `Bearer ${token}`)
+            expect(res.status).toBe(400)
+            expect(res.body).toMatchObject(expectedBody)
         });
 
         it('should return status code 404 if user does not exist', async () => {

@@ -1,5 +1,5 @@
 import { ILogger } from "../../logger/ILogger";
-import NotFoundError from "../../errors/NotFoundError";
+import { NotFoundError } from "../../errors";
 import { IUserRepository, NewUser, User } from "./IUserRepository";
 
 class FakeUserRepository implements IUserRepository {
@@ -56,6 +56,11 @@ class FakeUserRepository implements IUserRepository {
         }
         this.users.splice(index, 1);
         return Promise.resolve();
+    }
+
+    getByEmail(email: string): Promise<User | undefined> {
+        const user = this.users.find((user) => user.email === email)
+        return Promise.resolve(user)
     }
 }
 

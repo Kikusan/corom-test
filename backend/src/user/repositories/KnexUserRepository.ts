@@ -1,7 +1,7 @@
 import knex, { Knex } from 'knex';
 import knexConfig from '../../../knexfile';
 import { IUserRepository, NewUser, User } from "./IUserRepository";
-import NotFoundError from '../../errors/NotFoundError';
+import { NotFoundError } from '../../errors';
 import { ILogger } from '../../logger/ILogger';
 
 
@@ -14,6 +14,12 @@ class KnexRepository implements IUserRepository {
     constructor(logger: ILogger) {
         this.db = knex(knexConfig['development']);
         this.logger = logger;
+    }
+    async getByEmail(email: string): Promise<User | undefined> {
+        const user = await this.db(this.TABLE_NAME).select('*').where({ email });
+        if (user.length === 0)
+            return undefined
+        return user[0]
     }
     async addUser(user: NewUser): Promise<User> {
         const [newRecord] = await this.db(this.TABLE_NAME).insert(user).returning('*');

@@ -2,9 +2,10 @@ import { FastifyError, FastifyReply, FastifyRequest } from 'fastify'
 import NotFoundError from './NotFoundError'
 import UnauthorizedError from './UnauthorizedError'
 import { pinoLogger } from '../logger/pinoLogger'
+import BadRequestError from './BadRequestError'
 
 export function errorHandler(
-    error: FastifyError | NotFoundError | UnauthorizedError,
+    error: FastifyError | NotFoundError | UnauthorizedError | BadRequestError,
     request: FastifyRequest,
     reply: FastifyReply
 ) {
@@ -22,6 +23,14 @@ export function errorHandler(
         return reply.status(401).send({
             statusCode: 401,
             error: 'Unauthorized',
+            message: error.message,
+        })
+    }
+
+    if (error instanceof BadRequestError) {
+        return reply.status(400).send({
+            statusCode: 400,
+            error: 'Bad request',
             message: error.message,
         })
     }

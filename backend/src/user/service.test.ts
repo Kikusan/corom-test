@@ -1,15 +1,23 @@
 import UserService from "./service";
 import FakeUserRepository from "./repositories/FakeUserRepository";
 import { IUserRepository, User } from "./repositories/IUserRepository";
-import { pinoLogger } from "../logger/pinoLogger";
+import { NotFoundError, BadRequestError } from "../errors";
+import { ILogger } from "src/logger/ILogger";
 
 describe('User service', () => {
     let userRepository: IUserRepository;
     let service: UserService;
 
+    const mockLogger: ILogger = {
+        info: jest.fn(),
+        error: jest.fn(),
+        warn: jest.fn(),
+        debug: jest.fn(),
+    }
+
     beforeEach(() => {
-        userRepository = new FakeUserRepository(pinoLogger)
-        service = new UserService(userRepository, pinoLogger);
+        userRepository = new FakeUserRepository(mockLogger)
+        service = new UserService(userRepository, mockLogger);
     });
     describe('getUsers', () => {
         it('should return all users', async () => {
@@ -53,6 +61,23 @@ describe('User service', () => {
             });
         });
 
+        it('should throw an error if user email is already used', async () => {
+            const newUser = {
+                firstname: 'Robert',
+                lastname: 'Robichet',
+                email: 'Jane.Doe@unknown.com',
+                birthdate: '1980-01-01',
+            };
+            try {
+                await service.addUser(newUser);
+            }
+            catch (error) {
+                expect(error).toEqual(new BadRequestError('User with email Jane.Doe@unknown.com already exists'));
+                return;
+            }
+            expect(true).toBe(false);
+        });
+
     });
 
     describe('updateUser', () => {
@@ -75,14 +100,32 @@ describe('User service', () => {
                 id: '100',
                 firstname: 'Johnny',
                 lastname: 'Doowap',
-                email: '',
+                email: 'doowap@test.com',
                 birthdate: '1980-01-01',
             };
             try {
                 await service.updateUser(userToBeUpdated);
             }
             catch (error) {
-                expect(error).toEqual(new Error('User with id 100 not found'));
+                expect(error).toEqual(new NotFoundError('User with id 100 not found'));
+                return;
+            }
+            expect(true).toBe(false);
+        });
+
+        it('should throw an error if user email is already used', async () => {
+            const userToBeUpdated = {
+                id: '11111111-1111-1111-1111-111111111111',
+                firstname: 'Johnny',
+                lastname: 'Doowap',
+                email: 'Jane.Doe@unknown.com',
+                birthdate: '1980-01-01',
+            };
+            try {
+                await service.updateUser(userToBeUpdated);
+            }
+            catch (error) {
+                expect(error).toEqual(new BadRequestError('User with email Jane.Doe@unknown.com already exists'));
                 return;
             }
             expect(true).toBe(false);
@@ -108,7 +151,7 @@ describe('User service', () => {
                 await service.deleteUser('100');
             }
             catch (error) {
-                expect(error).toEqual(new Error('User with id 100 not found'));
+                expect(error).toEqual(new NotFoundError('User with id 100 not found'));
                 return;
             }
             expect(true).toBe(false);

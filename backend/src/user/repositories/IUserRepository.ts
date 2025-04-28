@@ -3,6 +3,7 @@ export interface IUserRepository {
     addUser(user: NewUser): Promise<User>;
     updateUser(user: User): Promise<User>;
     deleteUser(id: string): Promise<void>;
+    getByEmail(email: string): Promise<User | undefined>;
 }
 
 export type User = {
