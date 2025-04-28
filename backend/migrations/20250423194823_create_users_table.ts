@@ -6,7 +6,7 @@ export async function up(knex) {
         table.string('lastname').notNullable();
         table.string('email').notNullable().unique();
         table.date('birthdate').notNullable();
-        table.timestamps(true, true); // created_at & updated_at
+        table.timestamps(true, true);
     });
 }
 

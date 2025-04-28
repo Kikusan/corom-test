@@ -2,9 +2,24 @@ import { ILogger } from "src/logger/ILogger";
 import { IUserRepository, NewUser, User } from "./repositories/IUserRepository";
 import BadRequestError from "../errors/BadRequestError";
 
+export type Page = {
+    users: User[],
+    totalPages: number,
+    totalUsers: number
+}
+
+
+export type Search = {
+    page: number,
+    pageSize: number
+}
 export default class UserService {
     private readonly repository: IUserRepository;
     private readonly logger: ILogger;
+    private readonly defaultSearch: Search = {
+        page: 1,
+        pageSize: 10
+    }
     constructor(userRepository: IUserRepository, logger: ILogger) {
         this.repository = userRepository;
         this.logger = logger;
@@ -13,6 +28,25 @@ export default class UserService {
     public getUsers(): Promise<User[]> {
         this.logger.info('begin to get users')
         return this.repository.getAllUsers();
+    }
+
+    public async searchUsers(search: Search = this.defaultSearch): Promise<Page> {
+        const { pageSize } = search;
+        this.logger.info('begin to search users')
+        const users = await this.repository.searchUsers(search);
+        const totalUsers = await this.repository.getUsersCount();
+        const totalPages = Math.ceil(totalUsers / pageSize);
+        console.log({
+            users,
+            totalPages,
+            totalUsers,
+        })
+
+        return {
+            users,
+            totalPages,
+            totalUsers,
+        };
     }
 
     public async addUser(user: NewUser): Promise<User> {

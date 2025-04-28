@@ -1,3 +1,4 @@
+import BadRequestError from "../../../utils/errors/BadRequestError";
 import NotFoundError from "../../../utils/errors/NotFoundError";
 import UnexpectedError from "../../../utils/errors/UnexpectedError";
 import { RegisteredUser, TableUser, UserBase } from "./User";
@@ -194,7 +195,22 @@ describe("UserService", () => {
             afterEach(() => {
                 vi.restoreAllMocks();
             });
-            it("should throw an expected error", async () => {
+            it("should throw an expected error when status code is 500", async () => {
+                vi.spyOn(globalThis, "fetch").mockResolvedValue({
+                    ok: false,
+                    status: 500,
+                    json: vi.fn().mockResolvedValue({}),
+                } as unknown as Response);
+                try {
+                    await userService.createUser(userToBeCreated);
+                } catch (err) {
+                    expect(err).toEqual(new UnexpectedError())
+                    return
+                }
+                expect(true).toBeFalsy()
+            });
+
+            it("should throw an bad request error when status code is 400", async () => {
                 vi.spyOn(globalThis, "fetch").mockResolvedValue({
                     ok: false,
                     status: 400,
@@ -203,7 +219,7 @@ describe("UserService", () => {
                 try {
                     await userService.createUser(userToBeCreated);
                 } catch (err) {
-                    expect(err).toEqual(new UnexpectedError())
+                    expect(err).toEqual(new BadRequestError())
                     return
                 }
                 expect(true).toBeFalsy()
@@ -250,7 +266,22 @@ describe("UserService", () => {
             afterEach(() => {
                 vi.restoreAllMocks();
             });
-            it("should throw an expected error", async () => {
+            it("should throw an expected error when status is 500", async () => {
+                vi.spyOn(globalThis, "fetch").mockResolvedValue({
+                    ok: false,
+                    status: 500,
+                    json: vi.fn().mockResolvedValue({}),
+                } as unknown as Response);
+                try {
+                    await userService.updateUser(userToBeCreated);
+                } catch (err) {
+                    expect(err).toEqual(new UnexpectedError())
+                    return
+                }
+                expect(true).toBeFalsy()
+            });
+
+            it("should throw an bad request error when status is 400", async () => {
                 vi.spyOn(globalThis, "fetch").mockResolvedValue({
                     ok: false,
                     status: 400,
@@ -259,7 +290,7 @@ describe("UserService", () => {
                 try {
                     await userService.updateUser(userToBeCreated);
                 } catch (err) {
-                    expect(err).toEqual(new UnexpectedError())
+                    expect(err).toEqual(new BadRequestError())
                     return
                 }
                 expect(true).toBeFalsy()

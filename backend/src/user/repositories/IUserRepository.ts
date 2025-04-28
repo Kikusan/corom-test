@@ -1,9 +1,13 @@
+import { Search } from "../service";
+
 export interface IUserRepository {
     getAllUsers(): Promise<User[]>;
     addUser(user: NewUser): Promise<User>;
     updateUser(user: User): Promise<User>;
     deleteUser(id: string): Promise<void>;
     getByEmail(email: string): Promise<User | undefined>;
+    searchUsers(search?: Search): Promise<User[]>;
+    getUsersCount(): Promise<number>
 }
 
 export type User = {
@@ -20,3 +24,5 @@ export type NewUser = {
     email: string;
     birthdate: string;
 }
+
+

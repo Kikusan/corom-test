@@ -1,4 +1,3 @@
-import { format } from "path";
 
 const getUsersSchema = {
     description: 'retrieve all users',
@@ -17,6 +16,43 @@ const getUsersSchema = {
                     email: { type: 'string', format: 'email' },
                     birthdate: { type: 'string', format: 'date' },
                 },
+            }
+        }
+    }
+};
+
+const searchUsersSchema = {
+    description: 'Retrieve all users with pagination',
+    tags: ['user'],
+    security: [{ bearerAuth: [] }],
+    querystring: {
+        type: 'object',
+        properties: {
+            page: { type: 'integer', default: 1, description: 'Page number' },
+            pageSize: { type: 'integer', default: 10, description: 'Number of users per page' },
+        },
+        required: [],
+    },
+    response: {
+        200: {
+            description: 'Successful response',
+            type: 'object',
+            properties: {
+                users: {
+                    type: 'array',
+                    items: {
+                        type: 'object',
+                        properties: {
+                            id: { type: 'string' },
+                            firstname: { type: 'string' },
+                            lastname: { type: 'string' },
+                            email: { type: 'string', format: 'email' },
+                            birthdate: { type: 'string', format: 'date' },
+                        },
+                    }
+                },
+                totalUsers: { type: 'integer', description: 'Total number of users' },
+                totalPages: { type: 'integer', description: 'Total number of pages' },
             }
         }
     }
@@ -106,4 +142,4 @@ const deleteUserSchema = {
     }
 };
 
-export { getUsersSchema, addUserSchema, updateUserSchema, deleteUserSchema };
+export { getUsersSchema, addUserSchema, updateUserSchema, deleteUserSchema, searchUsersSchema };

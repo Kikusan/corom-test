@@ -10,6 +10,10 @@ class KnexRepository implements IUserRepository {
     private readonly logger: ILogger;
     private readonly LOG_PREFIX = 'FakeUserRepository';
     private readonly TABLE_NAME: string = 'users';
+    private readonly defaultSearch: Search = {
+        page: 1,
+        pageSize: 10
+    }
 
     constructor(logger: ILogger) {
         this.db = knex(knexConfig['development']);
@@ -49,6 +53,25 @@ class KnexRepository implements IUserRepository {
         return await this.db(this.TABLE_NAME).select('*');
     }
 
+    async searchUsers(search: Search = this.defaultSearch) {
+        const { page, pageSize } = search;
+        const offset = (page - 1) * pageSize;
+
+        return this.db(this.TABLE_NAME).select('*')
+            .limit(pageSize)
+            .offset(offset);
+    }
+
+    async getUsersCount(): Promise<number> {
+        const result = await this.db(this.TABLE_NAME).count();
+        return Number(result[0].count);
+    }
+
+}
+
+type Search = {
+    page: number,
+    pageSize: number
 }
 
 export default KnexRepository;
