@@ -4,6 +4,7 @@ import { UserProvider } from '../contexts/userContext';
 import IUserService from '../services/IUserService';
 import userEvent from '@testing-library/user-event';
 import { TableUser } from '../services/User';
+import { NotificationProvider } from '../../../utils/notifications/NotificationContext';
 
 describe('user form', () => {
   const createUserMock = vi.fn();
@@ -18,9 +19,11 @@ describe('user form', () => {
         updateUser: updateUserMock,
       };
       render(
-        <UserProvider service={userService}>
-          <UserForm onClose={() => {}} refresh={() => {}} />
-        </UserProvider>,
+        <NotificationProvider>
+          <UserProvider service={userService}>
+            <UserForm onClose={() => {}} refresh={() => {}} />
+          </UserProvider>
+        </NotificationProvider>,
       );
       await act(async () => {});
     });
@@ -109,13 +112,16 @@ describe('user form', () => {
         updateUser: updateUserMock,
       };
       render(
-        <UserProvider service={userService}>
-          <UserForm
-            onClose={() => {}}
-            refresh={() => {}}
-            currentUser={currentUser}
-          />
-        </UserProvider>,
+        <NotificationProvider>
+          <UserProvider service={userService}>
+            <UserForm
+              onClose={() => {}}
+              refresh={() => {}}
+              currentUser={currentUser}
+            />
+          </UserProvider>
+          ,
+        </NotificationProvider>,
       );
       await act(async () => {});
     });

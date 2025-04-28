@@ -3,13 +3,16 @@ import userEvent from '@testing-library/user-event';
 import { FakeUserService } from './services/FakeUserService';
 import { UserProvider } from './contexts/userContext';
 import { UserBody } from './UserBody';
+import { NotificationProvider } from '../../utils/notifications/NotificationContext';
 describe('user page', () => {
   beforeEach(async () => {
     const userService = new FakeUserService();
     render(
-      <UserProvider service={userService}>
-        <UserBody />
-      </UserProvider>,
+      <NotificationProvider>
+        <UserProvider service={userService}>
+          <UserBody />
+        </UserProvider>
+      </NotificationProvider>,
     );
     await act(async () => {});
   });
@@ -36,7 +39,7 @@ describe('user page', () => {
   it('should open user edition modal', async () => {
     const userDeleteButtons = screen.getAllByText('Edit');
     await userEvent.click(userDeleteButtons[0]);
-    expect(screen.getByText(/update user: 1/i)).toBeDefined();
+    expect(screen.getByText(/update user/i)).toBeDefined();
   });
 
   it('should delete user when clicking on delete button', async () => {

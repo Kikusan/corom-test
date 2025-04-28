@@ -1,4 +1,4 @@
-import { Modal, Box, Typography, Button } from '@mui/material';
+import { Modal, Box, Typography, IconButton } from '@mui/material';
 import UserForm from './UserForm';
 import { TableUser } from '../services/User';
 
@@ -37,13 +37,21 @@ export default function FormModal({
         }}
       >
         <Typography id="modal-title" variant="h6" component="h2">
-          {currentUser
-            ? `update user: ${currentUser.technicalId}`
-            : 'Add a new user'}
+          {currentUser ? 'update user' : 'Add a new user'}
         </Typography>
-        <Button onClick={onClose} variant="contained" sx={{ mt: 3 }}>
-          Close
-        </Button>
+        <IconButton
+          aria-label="close"
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          X
+        </IconButton>
+
         <UserForm
           onClose={onClose}
           refresh={refresh}

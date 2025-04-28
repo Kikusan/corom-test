@@ -2,6 +2,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { TextField, Button, Box } from '@mui/material';
 import { UseUser } from '../hooks/useUsers';
 import { TableUser } from '../services/User';
+import { useNotification } from '../../../utils/notifications/NotificationContext';
 
 type FormData = {
   lastname: string;
@@ -42,16 +43,24 @@ export default function UserForm({
   } = useForm<FormData>({ defaultValues });
 
   const { createUser, getUsers, updateUser } = UseUser();
+  const { notify } = useNotification();
   const onSubmit = async (user: FormData) => {
     const userFromFormData = { ...user, birthdate: new Date(user.birthdate) };
+    try {
+      if (currentUser) {
+        await updateUser({ id: currentUser.technicalId, ...userFromFormData });
+        notify('User updated.', 'success');
+      } else {
+        await createUser(userFromFormData);
+        notify('User created', 'success');
+      }
+      const users = await getUsers();
 
-    if (currentUser) {
-      await updateUser({ id: currentUser.technicalId, ...userFromFormData });
-    } else {
-      await createUser(userFromFormData);
+      refresh(users);
+    } catch (e: unknown) {
+      if (e instanceof Error) notify(e.message, 'error');
+      else notify(`something's wrong. Please contact admin`, 'error');
     }
-    const users = await getUsers();
-    refresh(users);
     onClose();
   };
 

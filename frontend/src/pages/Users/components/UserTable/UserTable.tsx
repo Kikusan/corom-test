@@ -3,6 +3,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import { UseUser } from '../../hooks/useUsers';
 import createColumns from './columns';
 import { TableUser } from '../../services/User';
+import { useNotification } from '../../../../utils/notifications/NotificationContext';
 
 type UserTableProps = {
   users: TableUser[];
@@ -17,11 +18,18 @@ export default function UserTable({
   setIsModalOpen,
 }: Readonly<UserTableProps>) {
   const { getUsers, deleteUser } = UseUser();
+  const { notify } = useNotification();
 
   const handleDeleteUser = async (userId: string) => {
-    await deleteUser(userId);
-    const response = await getUsers();
-    refresh(response);
+    try {
+      await deleteUser(userId);
+      const response = await getUsers();
+      notify('User deleted.', 'success');
+      refresh(response);
+    } catch (e: unknown) {
+      if (e instanceof Error) notify(e.message, 'error');
+      else notify(`something's wrong. Please contact admin`, 'error');
+    }
   };
 
   const handleUpdateUser = (user: TableUser) => {

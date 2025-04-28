@@ -3,6 +3,7 @@ import FormModal from './components/FormModal';
 import { useEffect, useState } from 'react';
 import { TableUser } from './services/User';
 import { UseUser } from './hooks/useUsers';
+import { Button } from '@mui/material';
 
 export function UserBody() {
   const [users, setUsers] = useState<TableUser[]>([]);
@@ -23,14 +24,15 @@ export function UserBody() {
 
   return (
     <>
-      <button
+      <Button
+        variant="contained"
         onClick={() => {
           setCurrentUser(undefined);
           setIsModalOpen(true);
         }}
       >
         Create a user
-      </button>
+      </Button>
 
       <FormModal
         open={isModalOpen}
