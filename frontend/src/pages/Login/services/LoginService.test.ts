@@ -1,3 +1,4 @@
+import ApiError from "../../../utils/errors/ApiError";
 import { LoginService } from "./LoginService";
 
 describe("LoginService", () => {
@@ -21,10 +22,11 @@ describe("LoginService", () => {
             expect(globalThis.fetch).toHaveBeenCalledWith(
                 "http://localhost:4000/auth/login",
                 {
-                    method: "POST", "body": "{\"username\":\"user\",\"password\":\"pass\"}",
+                    method: 'POST',
+                    body: '{"username":"user","password":"pass"}',
                     headers: {
                         Authorization: "",
-                        "Content-Type": "application/json",
+                        'Content-Type': 'application/json',
                     },
                 });
         });
@@ -39,7 +41,7 @@ describe("LoginService", () => {
             vi.spyOn(globalThis, "fetch").mockResolvedValue({
                 ok: false,
                 status: 500,
-                json: vi.fn().mockResolvedValue({}),
+                json: vi.fn().mockResolvedValue({ message: 'failed' }),
             } as unknown as Response);
         });
 
@@ -47,11 +49,11 @@ describe("LoginService", () => {
             vi.restoreAllMocks();
         });
 
-        it("should return the token", async () => {
+        it("should throw an error", async () => {
             try {
                 await loginService.login('user', 'pass');
             } catch (err) {
-                expect(err).toEqual(new Error(`API error: 500.`))
+                expect(err).toEqual(new ApiError(500, 'failed'))
                 return
             }
             expect(true).toBeFalsy()

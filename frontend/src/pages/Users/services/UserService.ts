@@ -1,4 +1,7 @@
 import { apiClient } from "../../../utils/apiClient";
+import ApiError from "../../../utils/errors/ApiError";
+import NotFoundError from "../../../utils/errors/NotFoundError";
+import UnexpectedError from "../../../utils/errors/UnexpectedError";
 import IUserService from "./IUserService";
 import { RegisteredUser, TableUser, UserBase } from "./User";
 
@@ -9,41 +12,72 @@ type UserFromApi = {
     email: string;
     birthdate: string;
 }
-
-
 export class UserService implements IUserService {
 
     async getUsers(): Promise<TableUser[]> {
-        const users = await apiClient('/user');
-        return users.map((user: UserFromApi, index: number) => ({ ...user, birthdate: new Date(user.birthdate), id: index, technicalId: user.id }))
-
+        let result;
+        try {
+            const users = await apiClient('/user');
+            result = users.map((user: UserFromApi, index: number) => ({ ...user, birthdate: new Date(user.birthdate), id: index, technicalId: user.id }))
+        } catch (e: unknown) {
+            this.handleError(e);
+        }
+        return result
     }
 
     async createUser(userToBeCreated: UserBase): Promise<RegisteredUser> {
+        let result;
         const formattedUser: UserFromApi = {
             ...userToBeCreated,
             birthdate: new Date(userToBeCreated.birthdate).toISOString().split('T')[0]
         }
-        const newUser = await apiClient('/user', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(formattedUser),
-        })
-        return { ...newUser, birthdate: new Date(newUser.birthdate) }
+        try {
+            const newUser = await apiClient('/user', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formattedUser),
+            })
+            result = { ...newUser, birthdate: new Date(newUser.birthdate) }
+        } catch (e: unknown) {
+            this.handleError(e);
+        }
+        return result;
     }
 
-    deleteUser(id: string): Promise<void> {
-        return apiClient(`/user/${id}`, {
-            method: 'DELETE',
-            body: JSON.stringify({}),
-        })
+    async deleteUser(id: string): Promise<void> {
+        try {
+            await apiClient(`/user/${id}`, {
+                method: 'DELETE',
+            })
+        } catch (e: unknown) {
+            this.handleError(e);
+        }
     }
 
-    updateUser(userToBeUpdated: RegisteredUser): Promise<RegisteredUser> {
-        return apiClient(`/user/${userToBeUpdated.id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ...userToBeUpdated, birthdate: new Date(userToBeUpdated.birthdate).toISOString().split('T')[0] }),
-        })
+
+
+    async updateUser(userToBeUpdated: RegisteredUser): Promise<RegisteredUser> {
+        let result;
+        try {
+            result = await apiClient(`/user/${userToBeUpdated.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...userToBeUpdated, birthdate: new Date(userToBeUpdated.birthdate).toISOString().split('T')[0] }),
+            })
+
+        } catch (e: unknown) {
+            this.handleError(e);
+        }
+        return result;
+    }
+    private handleError(e: unknown) {
+        if (e instanceof ApiError) {
+            if (e.statusCode === 404) {
+                throw new NotFoundError(e.message);
+            } else {
+                throw new UnexpectedError();
+            }
+        }
+        throw new UnexpectedError();
     }
 }

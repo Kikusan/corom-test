@@ -1,3 +1,5 @@
+import ApiError from "./errors/ApiError";
+
 export const apiClient = async (endpoint: string, options: RequestInit = {}) => {
     const token = localStorage.getItem("token");
     const apiUrl = import.meta.env.VITE_API_BASE_URL
@@ -10,7 +12,8 @@ export const apiClient = async (endpoint: string, options: RequestInit = {}) => 
     });
 
     if (!response.ok) {
-        throw new Error(`API error: ${response.status}.`);
+        const errorMessage = await response.json()
+        throw new ApiError(response.status, errorMessage.message);
     }
 
     if (response.status === 204)
