@@ -1,9 +1,9 @@
 import { FastifyInstance } from 'fastify'
-import UserService, { Search } from './service';
+import UserService, { Search, SortOrder } from './service';
 import FakeUserRepository from './repositories/FakeUserRepository';
 import KnexUserRepository from './repositories/KnexUserRepository';
 import { IUserRepository, NewUser } from './repositories/IUserRepository';
-import { addUserSchema, deleteUserSchema, getUsersSchema, searchUsersSchema, updateUserSchema } from './schema';
+import { addUserSchema, deleteUserSchema, getUsersSchema, SearchUsersQuery, searchUsersSchema, updateUserSchema } from './schema';
 import { pinoLogger } from '../logger/pinoLogger';
 
 
@@ -28,8 +28,18 @@ export default function createUserRoutes(mock: boolean = false) {
             preHandler: [app.authenticate],
             schema: searchUsersSchema
         }, async (request, reply) => {
-            const { page, pageSize, sort } = request.query as Search;
-            const users = await userService.searchUsers({ page, pageSize, sort });
+            const { page, pageSize, sort, firstname, lastname, email } = request.query as SearchUsersQuery;
+            const search: Search = {
+                page,
+                pageSize,
+                sort: sort as SortOrder,
+                filter: {
+                    firstname,
+                    lastname,
+                    email
+                }
+            }
+            const users = await userService.searchUsers(search);
             return reply.code(200).send(users);
         });
 

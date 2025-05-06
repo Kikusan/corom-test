@@ -185,13 +185,26 @@ class FakeUserRepository implements IUserRepository {
     }
 
     searchUsers(search: Search): Promise<User[]> {
-        const { page, pageSize, sort } = search;
-        let orderedUsers = this.users
-        if (sort) {
+        const { page, pageSize, sort, filter } = search;
+        let orderedUsers = [...this.users]
 
+        if (filter?.firstname) {
+            const value = filter.firstname.toLowerCase();
+            orderedUsers = orderedUsers.filter(u => u.firstname.toLowerCase().includes(value));
+        }
+        if (filter?.lastname) {
+            const value = filter.lastname.toLowerCase();
+            orderedUsers = orderedUsers.filter(u => u.lastname.toLowerCase().includes(value));
+        }
+        if (filter?.email) {
+            const value = filter.email.toLowerCase();
+            orderedUsers = orderedUsers.filter(u => u.email.toLowerCase().includes(value));
+        }
+
+        if (sort) {
             const [field, direction] = sort.split(":") as [keyof User, "asc" | "desc"];
 
-            orderedUsers = [...this.users].sort((a, b) => {
+            orderedUsers = [...orderedUsers].sort((a, b) => {
                 const aValue = a[field];
                 const bValue = b[field];
 
@@ -207,8 +220,22 @@ class FakeUserRepository implements IUserRepository {
         return Promise.resolve(orderedUsers.slice(startIndex, endIndex))
     }
 
-    getUsersCount(): Promise<number> {
-        return Promise.resolve(this.users.length)
+    getUsersCount(search: Search): Promise<number> {
+        let orderedUsers = [...this.users]
+        const { filter } = search;
+        if (filter?.firstname) {
+            const value = filter.firstname.toLowerCase();
+            orderedUsers = orderedUsers.filter(u => u.firstname.toLowerCase().includes(value));
+        }
+        if (filter?.lastname) {
+            const value = filter.lastname.toLowerCase();
+            orderedUsers = orderedUsers.filter(u => u.lastname.toLowerCase().includes(value));
+        }
+        if (filter?.email) {
+            const value = filter.email.toLowerCase();
+            orderedUsers = orderedUsers.filter(u => u.email.toLowerCase().includes(value));
+        }
+        return Promise.resolve(orderedUsers.length)
     }
 }
 

@@ -31,6 +31,10 @@ const searchUsersSchema = {
             page: { type: 'integer', default: 1, description: 'Page number' },
             pageSize: { type: 'integer', default: 10, description: 'Number of users per page' },
             sort: { type: 'string', description: 'sort type' },
+            firstname: { type: 'string', description: 'Search users by firstname' },
+            lastname: { type: 'string', description: 'Search users by lastname' },
+            email: { type: 'string', description: 'Search users by email' },
+
         },
         required: [],
     },
@@ -143,4 +147,14 @@ const deleteUserSchema = {
     }
 };
 
+interface SearchUsersQuery {
+    page: number;
+    pageSize: number;
+    sort?: string;
+    firstname?: string;
+    lastname?: string;
+    email?: string;
+}
+
 export { getUsersSchema, addUserSchema, updateUserSchema, deleteUserSchema, searchUsersSchema };
+export type { SearchUsersQuery };

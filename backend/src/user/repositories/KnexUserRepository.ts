@@ -3,7 +3,7 @@ import knexConfig from '../../../knexfile';
 import { IUserRepository, NewUser, User } from "./IUserRepository";
 import { NotFoundError } from '../../errors';
 import { ILogger } from '../../logger/ILogger';
-import { Search } from '../service';
+import { Filter, Search, SortOrder } from '../service';
 
 
 class KnexRepository implements IUserRepository {
@@ -55,22 +55,42 @@ class KnexRepository implements IUserRepository {
     }
 
     async searchUsers(search: Search = this.defaultSearch) {
-        const { page, pageSize, sort } = search;
+        const { page, pageSize, sort, filter } = search;
         const offset = (page - 1) * pageSize;
-        const query = this.db(this.TABLE_NAME).select('*');
+        const query = this.prepareQuery(sort, filter);
         if (sort) {
             const [field, direction] = sort.split(":") as [keyof User, "asc" | "desc"];
             query.orderBy(field, direction)
         }
-
         return query.limit(pageSize).offset(offset);
     }
 
-    async getUsersCount(): Promise<number> {
-        const result = await this.db(this.TABLE_NAME).count();
-        return Number(result[0].count);
+    async getUsersCount(search: Search = this.defaultSearch): Promise<number> {
+        const { sort, filter } = search;
+        const query = this.prepareQuery(sort, filter);
+        const result = await query;
+        return result.length
     }
 
+
+    private prepareQuery(sort: SortOrder | undefined, filter: Filter | undefined) {
+        const query = this.db(this.TABLE_NAME).select('*').groupBy('id');
+        if (sort) {
+            const [field, direction] = sort.split(":") as [keyof User, "asc" | "desc"];
+            query.orderBy(field, direction);
+        }
+
+        if (filter?.firstname) {
+            query.where('firstname', 'ILIKE', `%${filter.firstname}%`);
+        }
+        if (filter?.lastname) {
+            query.where('lastname', 'ILIKE', `%${filter.lastname}%`);
+        }
+        if (filter?.email) {
+            query.where('email', 'ILIKE', `%${filter.email}%`);
+        }
+        return query;
+    }
 }
 
 export default KnexRepository;

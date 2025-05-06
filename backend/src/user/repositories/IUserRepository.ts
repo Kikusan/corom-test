@@ -7,7 +7,7 @@ export interface IUserRepository {
     deleteUser(id: string): Promise<void>;
     getByEmail(email: string): Promise<User | undefined>;
     searchUsers(search?: Search): Promise<User[]>;
-    getUsersCount(): Promise<number>
+    getUsersCount(search?: Search): Promise<number>
 }
 
 export type User = {

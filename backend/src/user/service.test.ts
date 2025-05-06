@@ -411,6 +411,32 @@ describe('User service', () => {
             const result = await service.searchUsers(search);
             expect(result).toEqual(expectedResult);
         });
+
+        it('should return the people with doe include in lastname', async () => {
+            const expectedResult: Page = {
+                users: [
+                    {
+                        id: '11111111-1111-1111-1111-111111111111',
+                        firstname: 'John',
+                        lastname: 'Doe',
+                        email: 'John.Doe@unknown.com',
+                        birthdate: '1990-01-01',
+                    },
+                    {
+                        id: '22222222-2222-2222-2222-222222222222',
+                        firstname: 'Jane',
+                        lastname: 'Doe',
+                        email: 'Jane.Doe@unknown.com',
+                        birthdate: '1990-01-01',
+                    },
+                ],
+                totalUsers: 2,
+                totalPages: 1
+            }
+            const search: Search = { page: 1, pageSize: 5, filter: { lastname: 'doe' } }
+            const result = await service.searchUsers(search);
+            expect(result).toEqual(expectedResult);
+        });
     });
 
     describe('addUser', () => {

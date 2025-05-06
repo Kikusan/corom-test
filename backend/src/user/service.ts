@@ -19,11 +19,17 @@ export enum SortOrder {
     EmailDesc = "email:desc"
 }
 
+export type Filter = {
+    firstname?: string,
+    lastname?: string,
+    email?: string
+}
 
 export type Search = {
     page: number,
     pageSize: number,
     sort?: SortOrder,
+    filter?: Filter
 }
 export default class UserService {
     private readonly repository: IUserRepository;
@@ -46,7 +52,7 @@ export default class UserService {
         const { pageSize } = search;
         this.logger.info('begin to search users')
         const users = await this.repository.searchUsers(search);
-        const totalUsers = await this.repository.getUsersCount();
+        const totalUsers = await this.repository.getUsersCount(search);
         const totalPages = Math.ceil(totalUsers / pageSize);
 
         return {

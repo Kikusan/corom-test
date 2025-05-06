@@ -197,6 +197,33 @@ describe('User routes', () => {
             expect(res.body).toEqual(expectedBody)
         });
 
+        it('should return an list of users ordered by firstname with page data and with doe included in lastname', async () => {
+            const token = await authenticate(app);
+            const res = await supertest(app.server).get('/user/search?page=1&pageSize=5&sort=firstname:asc&lastname=doe').set('Authorization', `Bearer ${token}`)
+            const expectedBody = {
+                users: [
+                    {
+                        id: '22222222-2222-2222-2222-222222222222',
+                        firstname: 'Jane',
+                        lastname: 'Doe',
+                        email: 'Jane.Doe@unknown.com',
+                        birthdate: '1990-01-01',
+                    },
+                    {
+                        id: '11111111-1111-1111-1111-111111111111',
+                        firstname: 'John',
+                        lastname: 'Doe',
+                        email: 'John.Doe@unknown.com',
+                        birthdate: '1990-01-01',
+                    },
+                ],
+                totalUsers: 2,
+                totalPages: 1
+            }
+            expect(res.status).toBe(200)
+            expect(res.body).toEqual(expectedBody)
+        });
+
         it('should return an error with the code 401', async () => {
             const res = await supertest(app.server).get('/user/search?page=1&pageSize=5')
             expect(res.status).toBe(401)
