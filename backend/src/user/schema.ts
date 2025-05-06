@@ -30,6 +30,7 @@ const searchUsersSchema = {
         properties: {
             page: { type: 'integer', default: 1, description: 'Page number' },
             pageSize: { type: 'integer', default: 10, description: 'Number of users per page' },
+            sort: { type: 'string', description: 'sort type' },
         },
         required: [],
     },

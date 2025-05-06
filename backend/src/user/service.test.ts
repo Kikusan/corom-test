@@ -1,4 +1,4 @@
-import UserService, { Page, Search } from "./service";
+import UserService, { Page, Search, SortOrder } from "./service";
 import FakeUserRepository from "./repositories/FakeUserRepository";
 import { IUserRepository, User } from "./repositories/IUserRepository";
 import { NotFoundError, BadRequestError } from "../errors";
@@ -266,6 +266,148 @@ describe('User service', () => {
                 totalPages: 3
             }
             const search: Search = { page: 2, pageSize: 7 }
+            const result = await service.searchUsers(search);
+            expect(result).toEqual(expectedResult);
+        });
+
+        it('should return the 5 first users ordered by firstname', async () => {
+            const expectedResult: Page = {
+                users: [
+                    {
+                        "id": "20202020-2020-2020-2020-202020202020",
+                        "firstname": "Aiden",
+                        "lastname": "Taylor",
+                        "email": "Aiden.Taylor@unknown.com",
+                        "birthdate": "1995-03-30"
+                    },
+                    {
+                        "id": "19191919-1919-1919-1919-191919191919",
+                        "firstname": "Chloe",
+                        "lastname": "Thomas",
+                        "email": "Chloe.Thomas@unknown.com",
+                        "birthdate": "1991-09-17"
+                    },
+                    {
+                        "id": "12121212-1212-1212-1212-121212121212",
+                        "firstname": "Christopher",
+                        "lastname": "Rodriguez",
+                        "email": "Christopher.Rodriguez@unknown.com",
+                        "birthdate": "1986-09-18"
+                    },
+                    {
+                        "id": "77777777-7777-7777-7777-777777777777",
+                        "firstname": "Daniel",
+                        "lastname": "Jones",
+                        "email": "Daniel.Jones@unknown.com",
+                        "birthdate": "1988-03-28"
+                    },
+                    {
+                        "id": "55555555-5555-5555-5555-555555555555",
+                        "firstname": "David",
+                        "lastname": "Williams",
+                        "email": "David.Williams@unknown.com",
+                        "birthdate": "1992-11-30"
+                    }
+                ],
+                totalUsers: 19,
+                totalPages: 4
+            }
+            const search: Search = { page: 1, pageSize: 5, sort: SortOrder.FirstnameAsc }
+            const result = await service.searchUsers(search);
+            expect(result).toEqual(expectedResult);
+        });
+
+        it('should return the 5 first users ordered by birthdate', async () => {
+            const expectedResult: Page = {
+                users: [
+                    {
+                        id: '16161616-1616-1616-1616-161616161616',
+                        firstname: 'Joshua',
+                        lastname: 'Gonzalez',
+                        email: 'Joshua.Gonzalez@unknown.com',
+                        birthdate: '1984-07-13',
+                    },
+                    {
+                        id: '33333333-3333-3333-3333-333333333333',
+                        firstname: 'Michael',
+                        lastname: 'Smith',
+                        email: 'Michael.Smith@unknown.com',
+                        birthdate: '1985-05-15',
+                    },
+                    {
+                        id: '12121212-1212-1212-1212-121212121212',
+                        firstname: 'Christopher',
+                        lastname: 'Rodriguez',
+                        email: 'Christopher.Rodriguez@unknown.com',
+                        birthdate: '1986-09-18',
+                    },
+                    {
+                        id: '44444444-4444-4444-4444-444444444444',
+                        firstname: 'Sarah',
+                        lastname: 'Johnson',
+                        email: 'Sarah.Johnson@unknown.com',
+                        birthdate: '1987-07-21',
+                    },
+                    {
+                        id: '14141414-1414-1414-1414-141414141414',
+                        firstname: 'Matthew',
+                        lastname: 'Hernandez',
+                        email: 'Matthew.Hernandez@unknown.com',
+                        birthdate: '1987-12-25',
+                    }
+                ]
+                ,
+                totalUsers: 19,
+                totalPages: 4
+            }
+            const search: Search = { page: 1, pageSize: 5, sort: SortOrder.BirthdateAsc }
+            const result = await service.searchUsers(search);
+            expect(result).toEqual(expectedResult);
+        });
+
+        it('should return the 5 first users ordered by birthdate desc', async () => {
+            const expectedResult: Page = {
+                users: [
+                    {
+                        "id": "18181818-1818-1818-1818-181818181818",
+                        "firstname": "Ethan",
+                        "lastname": "Anderson",
+                        "email": "Ethan.Anderson@unknown.com",
+                        "birthdate": "1996-05-20"
+                    },
+                    {
+                        "id": "88888888-8888-8888-8888-888888888888",
+                        "firstname": "Laura",
+                        "lastname": "Miller",
+                        "email": "Laura.Miller@unknown.com",
+                        "birthdate": "1995-06-25"
+                    },
+                    {
+                        "id": "20202020-2020-2020-2020-202020202020",
+                        "firstname": "Aiden",
+                        "lastname": "Taylor",
+                        "email": "Aiden.Taylor@unknown.com",
+                        "birthdate": "1995-03-30"
+                    },
+                    {
+                        "id": "13131313-1313-1313-1313-131313131313",
+                        "firstname": "Megan",
+                        "lastname": "Martinez",
+                        "email": "Megan.Martinez@unknown.com",
+                        "birthdate": "1994-08-08"
+                    },
+                    {
+                        "id": "66666666-6666-6666-6666-666666666666",
+                        "firstname": "Emily",
+                        "lastname": "Brown",
+                        "email": "Emily.Brown@unknown.com",
+                        "birthdate": "1993-02-12"
+                    }
+                ],
+                totalUsers: 19,
+                totalPages: 4
+            }
+            const search: Search = { page: 1, pageSize: 5, sort: SortOrder.BirthdateDesc }
             const result = await service.searchUsers(search);
             expect(result).toEqual(expectedResult);
         });

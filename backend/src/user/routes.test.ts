@@ -39,7 +39,7 @@ describe('User routes', () => {
     })
 
     describe('GET /user/search', () => {
-        it('should return an list of users', async () => {
+        it('should return an list of users with page data', async () => {
             const token = await authenticate(app);
             const res = await supertest(app.server).get('/user/search?page=1&pageSize=5').set('Authorization', `Bearer ${token}`)
             const expectedBody = {
@@ -78,6 +78,116 @@ describe('User routes', () => {
                         lastname: 'Williams',
                         email: 'David.Williams@unknown.com',
                         birthdate: '1992-11-30',
+                    }
+                ],
+                totalUsers: 19,
+                totalPages: 4
+            }
+            expect(res.status).toBe(200)
+            expect(res.body).toEqual(expectedBody)
+        });
+
+        it('should return an list of users with pagination param', async () => {
+            const token = await authenticate(app);
+            const res = await supertest(app.server).get('/user/search?page=2&pageSize=7').set('Authorization', `Bearer ${token}`)
+            const expectedBody = {
+                users: [
+                    {
+                        id: '88888888-8888-8888-8888-888888888888',
+                        firstname: 'Laura',
+                        lastname: 'Miller',
+                        email: 'Laura.Miller@unknown.com',
+                        birthdate: '1995-06-25',
+                    },
+                    {
+                        id: '99999999-9999-9999-9999-999999999999',
+                        firstname: 'James',
+                        lastname: 'Davis',
+                        email: 'James.Davis@unknown.com',
+                        birthdate: '1991-10-10',
+                    },
+                    {
+                        id: '10101010-1010-1010-1010-101010101010',
+                        firstname: 'Olivia',
+                        lastname: 'Garcia',
+                        email: 'Olivia.Garcia@unknown.com',
+                        birthdate: '1989-04-04',
+                    },
+                    {
+                        id: '12121212-1212-1212-1212-121212121212',
+                        firstname: 'Christopher',
+                        lastname: 'Rodriguez',
+                        email: 'Christopher.Rodriguez@unknown.com',
+                        birthdate: '1986-09-18',
+                    },
+                    {
+                        id: '13131313-1313-1313-1313-131313131313',
+                        firstname: 'Megan',
+                        lastname: 'Martinez',
+                        email: 'Megan.Martinez@unknown.com',
+                        birthdate: '1994-08-08',
+                    },
+                    {
+                        id: '14141414-1414-1414-1414-141414141414',
+                        firstname: 'Matthew',
+                        lastname: 'Hernandez',
+                        email: 'Matthew.Hernandez@unknown.com',
+                        birthdate: '1987-12-25',
+                    },
+                    {
+                        id: '15151515-1515-1515-1515-151515151515',
+                        firstname: 'Sophia',
+                        lastname: 'Lopez',
+                        email: 'Sophia.Lopez@unknown.com',
+                        birthdate: '1992-02-22',
+                    },
+                ],
+                totalUsers: 19,
+                totalPages: 3
+            }
+            expect(res.status).toBe(200)
+            expect(res.body).toEqual(expectedBody)
+        });
+
+        it('should return an list of users ordered by firstname with page data', async () => {
+            const token = await authenticate(app);
+            const res = await supertest(app.server).get('/user/search?page=1&pageSize=5&sort=firstname:asc').set('Authorization', `Bearer ${token}`)
+            const expectedBody = {
+                users: [
+                    {
+                        "id": "20202020-2020-2020-2020-202020202020",
+                        "firstname": "Aiden",
+                        "lastname": "Taylor",
+                        "email": "Aiden.Taylor@unknown.com",
+                        "birthdate": "1995-03-30"
+                    },
+                    {
+                        "id": "19191919-1919-1919-1919-191919191919",
+                        "firstname": "Chloe",
+                        "lastname": "Thomas",
+                        "email": "Chloe.Thomas@unknown.com",
+                        "birthdate": "1991-09-17"
+                    },
+                    {
+                        "id": "12121212-1212-1212-1212-121212121212",
+                        "firstname": "Christopher",
+                        "lastname": "Rodriguez",
+                        "email": "Christopher.Rodriguez@unknown.com",
+                        "birthdate": "1986-09-18"
+                    },
+                    {
+                        "id": "77777777-7777-7777-7777-777777777777",
+                        "firstname": "Daniel",
+                        "lastname": "Jones",
+                        "email": "Daniel.Jones@unknown.com",
+                        "birthdate": "1988-03-28"
+                    },
+                    {
+                        "id": "55555555-5555-5555-5555-555555555555",
+                        "firstname": "David",
+                        "lastname": "Williams",
+                        "email": "David.Williams@unknown.com",
+                        "birthdate": "1992-11-30"
                     }
                 ],
                 totalUsers: 19,

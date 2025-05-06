@@ -3,6 +3,7 @@ import knexConfig from '../../../knexfile';
 import { IUserRepository, NewUser, User } from "./IUserRepository";
 import { NotFoundError } from '../../errors';
 import { ILogger } from '../../logger/ILogger';
+import { Search } from '../service';
 
 
 class KnexRepository implements IUserRepository {
@@ -54,12 +55,15 @@ class KnexRepository implements IUserRepository {
     }
 
     async searchUsers(search: Search = this.defaultSearch) {
-        const { page, pageSize } = search;
+        const { page, pageSize, sort } = search;
         const offset = (page - 1) * pageSize;
+        const query = this.db(this.TABLE_NAME).select('*');
+        if (sort) {
+            const [field, direction] = sort.split(":") as [keyof User, "asc" | "desc"];
+            query.orderBy(field, direction)
+        }
 
-        return this.db(this.TABLE_NAME).select('*')
-            .limit(pageSize)
-            .offset(offset);
+        return query.limit(pageSize).offset(offset);
     }
 
     async getUsersCount(): Promise<number> {
@@ -67,11 +71,6 @@ class KnexRepository implements IUserRepository {
         return Number(result[0].count);
     }
 
-}
-
-type Search = {
-    page: number,
-    pageSize: number
 }
 
 export default KnexRepository;

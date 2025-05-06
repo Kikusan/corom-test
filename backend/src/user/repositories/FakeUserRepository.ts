@@ -185,11 +185,28 @@ class FakeUserRepository implements IUserRepository {
     }
 
     searchUsers(search: Search): Promise<User[]> {
-        const { page, pageSize } = search;
+        const { page, pageSize, sort } = search;
+        let orderedUsers = this.users
+        if (sort) {
+
+            const [field, direction] = sort.split(":") as [keyof User, "asc" | "desc"];
+
+            orderedUsers = [...this.users].sort((a, b) => {
+                const aValue = a[field];
+                const bValue = b[field];
+
+                if (aValue < bValue) return direction === "asc" ? -1 : 1;
+                if (aValue > bValue) return direction === "asc" ? 1 : -1;
+                return 0;
+            });
+        }
+
+
         const startIndex = (page - 1) * pageSize;
         const endIndex = page * pageSize;
-        return Promise.resolve(this.users.slice(startIndex, endIndex))
+        return Promise.resolve(orderedUsers.slice(startIndex, endIndex))
     }
+
     getUsersCount(): Promise<number> {
         return Promise.resolve(this.users.length)
     }

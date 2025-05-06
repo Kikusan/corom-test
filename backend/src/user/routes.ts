@@ -28,8 +28,8 @@ export default function createUserRoutes(mock: boolean = false) {
             preHandler: [app.authenticate],
             schema: searchUsersSchema
         }, async (request, reply) => {
-            const { page, pageSize } = request.query as Search;
-            const users = await userService.searchUsers({ page, pageSize });
+            const { page, pageSize, sort } = request.query as Search;
+            const users = await userService.searchUsers({ page, pageSize, sort });
             return reply.code(200).send(users);
         });
 

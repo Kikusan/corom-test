@@ -8,10 +8,22 @@ export type Page = {
     totalUsers: number
 }
 
+export enum SortOrder {
+    FirstnameAsc = "firstname:asc",
+    FirstnameDesc = "firstname:desc",
+    LastnameAsc = "lastname:asc",
+    LastnameDesc = "lastname:desc",
+    BirthdateAsc = "birthdate:asc",
+    BirthdateDesc = "birthdate:desc",
+    EmailAsc = "email:asc",
+    EmailDesc = "email:desc"
+}
+
 
 export type Search = {
     page: number,
-    pageSize: number
+    pageSize: number,
+    sort?: SortOrder,
 }
 export default class UserService {
     private readonly repository: IUserRepository;
